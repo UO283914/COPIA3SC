@@ -45,7 +45,7 @@ public class AppMainController {
 		// ==========================================
 
 		// Reportero
-		this.view.addAccionReportero1Listener(e -> ejecutarAccionReportero1());
+		this.view.addEntregarReportajeListener(e -> ejecutarEntregarReportaje());
 
 		// Agente
 		this.view.addAccionAgente1Listener(e -> ejecutarAccionAgente1());
@@ -82,22 +82,18 @@ public class AppMainController {
 	}
 
 	// --- Lógica del Reportero ---
-	private void ejecutarAccionReportero1() {
-		//Mensaje de error si no se ha seleccionado ningún reportero en el combobox
-		if (view.getComboReportero().getSelectedItem() == null) {
-			SwingUtil.showMessage("Debes seleccionar un reportero", "ERROR", JOptionPane.ERROR_MESSAGE);
-			return;
-		}
-		String reporteroSeleccionado = (String) view.getComboReportero().getSelectedItem();
+		private void ejecutarEntregarReportaje() {
+			//Mensaje de error si no se ha seleccionado ningún reportero en el combobox
+			if (view.getComboReportero().getSelectedItem() == null) {
+				SwingUtil.showMessage("Debes seleccionar un reportero", "ERROR", JOptionPane.ERROR_MESSAGE);
+				return;
+			}
+			String reporteroSeleccionado = (String) view.getComboReportero().getSelectedItem();
 
-		if (reporteroSeleccionado != null) {
-			System.out.println("Reportero seleccionado: " + reporteroSeleccionado);
-			System.out.println("Ejecutando acción 1 para el reportero...");
-			// Aquí iría el código para abrir otra ventana, guardar algo, etc.
-		} else {
-			System.out.println("Aviso: No se ha seleccionado ningún reportero en el combo.");
+			app.model.EntregarReportajeModel modelo = new app.model.EntregarReportajeModel();
+			app.view.EntregarReportajeView vista = new app.view.EntregarReportajeView();
+			new app.controller.EntregarReportajeController(modelo, vista, reporteroSeleccionado);
 		}
-	}
 
 	// --- Lógica del Agente ---
 	private void ejecutarAccionAgente1() {

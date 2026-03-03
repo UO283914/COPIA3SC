@@ -33,7 +33,7 @@ public class AppMainView {
 	private JComboBox<String> comboEmpresa;
 
 	// Botones de las listas verticales (Añade más aquí según necesitéis)
-	private JButton btnAccionReportero1;
+	private JButton btnEntregarReportaje;
 	private JButton btnAccionAgente1;
 	private JButton btnAccionEmpresa1;
 	private JButton btnOfrecerReportajes; // Historia 33526
@@ -168,8 +168,8 @@ public class AppMainView {
 		gbc_panelBotonesReportero.gridy = 2;
 		panelCentral.add(panelBotonesReportero, gbc_panelBotonesReportero);
 
-		btnAccionReportero1 = new JButton("Acción Reportero 1");
-		panelBotonesReportero.add(btnAccionReportero1);
+		btnEntregarReportaje = new JButton("EntregarReportaje");
+		panelBotonesReportero.add(btnEntregarReportaje);
 
 		// Columna 2: Botones de Agente de Prensa
 		JPanel panelBotonesAgente = new JPanel(new GridLayout(0, 1, 0, 10));
@@ -236,8 +236,8 @@ public class AppMainView {
 	}
 
 	// Listeners para las acciones de los roles
-	public void addAccionReportero1Listener(ActionListener listener) {
-		btnAccionReportero1.addActionListener(listener);
+	public void addEntregarReportajeListener(ActionListener listener) {
+		btnEntregarReportaje.addActionListener(listener);
 	}
 
 	public void addAccionAgente1Listener(ActionListener listener) {
