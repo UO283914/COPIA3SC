@@ -59,7 +59,10 @@ public class Database extends DbUtil {
 	 * (si onlyOnce=true solo ejecutara el script la primera vez
 	 */
 	public void loadDatabase() {
+		// Recarga idempotente: recrea esquema limpio y después inserta datos demo
+		executeScript(SQL_SCHEMA);
 		executeScript(SQL_LOAD);
+		databaseCreated = true;
 	}
 	
 }

@@ -33,6 +33,8 @@ public class AsignacionReporterosController {
         view.getCbFiltroEventos().addActionListener(e -> SwingUtil.exceptionWrapper(() -> cargarEventosPorFiltro()));
         view.getCbFiltroTematicaReporteros().addActionListener(
                 e -> SwingUtil.exceptionWrapper(() -> cargarDetallesEvento()));
+        view.getCbFiltroTipoReportero().addActionListener(
+                e -> SwingUtil.exceptionWrapper(() -> cargarDetallesEvento()));
 
         view.getTabEventos().addMouseListener(new MouseAdapter() {
             @Override
@@ -88,9 +90,10 @@ public class AsignacionReporterosController {
             Integer idEvento = (Integer) view.getTabEventos().getValueAt(filaSeleccionada, 0);
             String fecha = (String) view.getTabEventos().getValueAt(filaSeleccionada, 2);
             boolean soloEspecializados = view.getCbFiltroTematicaReporteros().getSelectedIndex() == 1;
+            String tipoReportero = (String) view.getCbFiltroTipoReportero().getSelectedItem();
 
             reporterosDisponiblesVisualmente = model.getReporterosDisponibles(fecha, nombreAgencia, idEvento,
-                    soloEspecializados);
+                    soloEspecializados, tipoReportero);
             reporterosAsignadosVisualmente = model.getReporterosAsignados(idEvento);
 
             actualizarTablaDisponiblesVisualmente();
@@ -157,7 +160,7 @@ public class AsignacionReporterosController {
 
     private void actualizarTablaAsignadosVisualmente() {
         TableModel tmodel = SwingUtil.getTableModelFromPojos(reporterosAsignadosVisualmente,
-                new String[] { "idReportero", "nombre", "tematicas" });
+                new String[] { "idReportero", "nombre", "tipoReportero", "tematicas" });
         view.getTabAsignados().setModel(tmodel);
         view.getTabAsignados().getColumnModel().getColumn(0).setMinWidth(0);
         view.getTabAsignados().getColumnModel().getColumn(0).setMaxWidth(0);
@@ -166,7 +169,7 @@ public class AsignacionReporterosController {
 
     private void actualizarTablaDisponiblesVisualmente() {
         TableModel tmodel = SwingUtil.getTableModelFromPojos(reporterosDisponiblesVisualmente,
-                new String[] { "idReportero", "nombre", "tematicas" });
+                new String[] { "idReportero", "nombre", "tipoReportero", "tematicas" });
         view.getTabDisponibles().setModel(tmodel);
         view.getTabDisponibles().getColumnModel().getColumn(0).setMinWidth(0);
         view.getTabDisponibles().getColumnModel().getColumn(0).setMaxWidth(0);
