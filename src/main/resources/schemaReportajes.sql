@@ -1,4 +1,5 @@
 DROP TABLE IF EXISTS Comentario_Revision;
+DROP TABLE IF EXISTS Preferencia_Freelance;
 DROP TABLE IF EXISTS Multimedia;
 DROP TABLE IF EXISTS Evento_Tematica;
 DROP TABLE IF EXISTS Reportero_Tematica;
@@ -29,6 +30,7 @@ CREATE TABLE Reportero (
     telefono varchar(255),
     id_agencia INTEGER,
     tipo_reportero varchar(50),
+    es_freelance boolean DEFAULT false,
     FOREIGN KEY (id_agencia) REFERENCES Agencia (id_agencia)
 );
 
@@ -46,6 +48,7 @@ CREATE TABLE Evento (
     fecha date,
     id_agencia INTEGER,
     precio REAL DEFAULT 0.0,
+    disponible_freelance boolean DEFAULT false,
     FOREIGN KEY (id_agencia) REFERENCES Agencia (id_agencia)
 );
 
@@ -74,6 +77,16 @@ CREATE TABLE Empresa_Tematica (
 CREATE TABLE Asignacion (
     id_evento INTEGER,
     id_reportero INTEGER,
+    PRIMARY KEY (id_evento, id_reportero),
+    FOREIGN KEY (id_evento) REFERENCES Evento (id_evento),
+    FOREIGN KEY (id_reportero) REFERENCES Reportero (id_reportero)
+);
+
+CREATE TABLE Preferencia_Freelance (
+    id_evento INTEGER,
+    id_reportero INTEGER,
+    estado_preferencia varchar(50),
+    fecha_actualizacion datetime DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (id_evento, id_reportero),
     FOREIGN KEY (id_evento) REFERENCES Evento (id_evento),
     FOREIGN KEY (id_reportero) REFERENCES Reportero (id_reportero)

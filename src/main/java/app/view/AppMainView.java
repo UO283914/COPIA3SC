@@ -36,6 +36,7 @@ public class AppMainView {
 
 	// Botones de las listas verticales (Añade más aquí según necesitéis)
 	private JButton btnEntregarReportaje;
+	private JButton btnEscogerEventoFreelance;
 	private JButton btnAccionAgente1;
 	private JButton btnAccionEmpresa1;
 	private JButton btnOfrecerReportajes; // Historia 33526
@@ -171,6 +172,10 @@ public class AppMainView {
 
 		btnEntregarReportaje = new JButton("EntregarReportaje");
 		panelBotonesReportero.add(btnEntregarReportaje);
+		
+		btnEscogerEventoFreelance = new JButton("Escoger evento freelance");
+		panelBotonesReportero.add(btnEscogerEventoFreelance);
+
 
 		// Columna 2: Botones de Agente de Prensa
 		JPanel panelBotonesAgente = new JPanel(new GridLayout(0, 1, 0, 10));
@@ -245,6 +250,11 @@ public class AppMainView {
 	public void addEntregarReportajeListener(ActionListener listener) {
 		btnEntregarReportaje.addActionListener(listener);
 	}
+	
+	public void addEscogerEventoFreelanceListener(ActionListener listener) {
+	    btnEscogerEventoFreelance.addActionListener(listener);
+	}
+
 
 	public void addAccionAgente1Listener(ActionListener listener) {
 		btnAccionAgente1.addActionListener(listener);

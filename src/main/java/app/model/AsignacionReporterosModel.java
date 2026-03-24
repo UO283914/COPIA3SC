@@ -48,7 +48,7 @@ public class AsignacionReporterosModel {
 				+ "JOIN Agencia a ON r.id_agencia = a.id_agencia "
 				+ "LEFT JOIN Reportero_Tematica rt ON rt.id_reportero = r.id_reportero "
 				+ "LEFT JOIN Tematica t ON t.id_tematica = rt.id_tematica "
-				+ "WHERE a.nombre = ? AND NOT EXISTS ("
+				+ "WHERE a.nombre = ? AND COALESCE(r.es_freelance, 0) = 0 AND NOT EXISTS ("
 				+ "   SELECT 1 FROM Asignacion asig "
 				+ "   JOIN Evento e ON asig.id_evento = e.id_evento "
 				+ "   WHERE e.fecha = ? AND asig.id_reportero = r.id_reportero"
@@ -90,7 +90,7 @@ public class AsignacionReporterosModel {
 				+ "JOIN Asignacion a ON r.id_reportero = a.id_reportero "
 				+ "LEFT JOIN Reportero_Tematica rt ON rt.id_reportero = r.id_reportero "
 				+ "LEFT JOIN Tematica t ON t.id_tematica = rt.id_tematica "
-				+ "WHERE a.id_evento = ? "
+				+ "WHERE a.id_evento = ? AND COALESCE(r.es_freelance, 0) = 0 "
 				+ "GROUP BY r.id_reportero, r.nombre, r.tipo_reportero";
 		return db.executeQueryPojo(ReporteroDisplayDTO.class, sql, idEvento);
 	}

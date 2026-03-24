@@ -227,3 +227,22 @@ INSERT INTO Reportero_Tematica (id_reportero, id_tematica) VALUES (10, 1);
 INSERT INTO Reportero_Tematica (id_reportero, id_tematica) VALUES (11, 5);
 INSERT INTO Reportero_Tematica (id_reportero, id_tematica) VALUES (12, 4);
 
+-- ===== HU 34086: freelance =====
+INSERT INTO Reportero (id_reportero, nombre, telefono, id_agencia, tipo_reportero, es_freelance) VALUES (13, 'Lucia Campos', '600555111', 1, 'BASE', true);
+INSERT INTO Reportero (id_reportero, nombre, telefono, id_agencia, tipo_reportero, es_freelance) VALUES (14, 'Mario Vega', '600555222', 2, 'BASE', true);
+
+INSERT INTO Reportero_Tematica (id_reportero, id_tematica) VALUES (13, 1);
+INSERT INTO Reportero_Tematica (id_reportero, id_tematica) VALUES (13, 2);
+INSERT INTO Reportero_Tematica (id_reportero, id_tematica) VALUES (14, 5);
+INSERT INTO Reportero_Tematica (id_reportero, id_tematica) VALUES (14, 4);
+
+UPDATE Evento SET disponible_freelance = true WHERE id_evento = 1;
+UPDATE Evento SET disponible_freelance = true WHERE id_evento = 6;
+UPDATE Evento SET disponible_freelance = true WHERE id_evento = 11;
+UPDATE Evento SET disponible_freelance = true WHERE id_evento = 12;
+UPDATE Evento SET disponible_freelance = true WHERE id_evento = 20;
+
+INSERT INTO Preferencia_Freelance (id_evento, id_reportero, estado_preferencia) VALUES (1, 13, 'INTERESADO');
+INSERT INTO Preferencia_Freelance (id_evento, id_reportero, estado_preferencia) VALUES (6, 13, 'DUDANDO');
+INSERT INTO Preferencia_Freelance (id_evento, id_reportero, estado_preferencia) VALUES (11, 14, 'INTERESADO');
+INSERT INTO Preferencia_Freelance (id_evento, id_reportero, estado_preferencia) VALUES (20, 14, 'NO_INTERESADO');
