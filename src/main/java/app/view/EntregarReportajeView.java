@@ -14,6 +14,7 @@ import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
 import app.dto.EntregarReportajeDTO;
+import javax.swing.JList;
 
 public class EntregarReportajeView extends JFrame {
 
@@ -26,6 +27,7 @@ public class EntregarReportajeView extends JFrame {
     private JComboBox<String> comboFiltro;
     private JButton btnAceptar;
     private JButton btnRestaurarVersion;
+    private JButton btnSolicitarRevision;
     private JLabel lblPermisos;
     private JComboBox<String> comboVersiones;
     private JTextField textFieldSubtituloVersion;
@@ -159,6 +161,10 @@ public class EntregarReportajeView extends JFrame {
         btnAceptar.setText(texto);
     }
 
+    public void setSolicitarRevisionEnabled(boolean enabled) {
+        btnSolicitarRevision.setEnabled(enabled);
+    }
+
     public void setMensajePermisos(String mensaje) {
         lblPermisos.setText(mensaje == null ? "" : mensaje);
     }
@@ -169,6 +175,10 @@ public class EntregarReportajeView extends JFrame {
 
     public void addRestaurarVersionListener(ActionListener listener) {
         btnRestaurarVersion.addActionListener(listener);
+    }
+
+    public void addSolicitarRevisionListener(ActionListener listener) {
+        btnSolicitarRevision.addActionListener(listener);
     }
 
     public void addFiltroListener(ActionListener listener) {
@@ -254,7 +264,7 @@ public class EntregarReportajeView extends JFrame {
 
     public EntregarReportajeView() {
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setBounds(100, 100, 1500, 604);
+        setBounds(100, 100, 1300, 620);
         contentPane = new JPanel();
         contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
         setContentPane(contentPane);
@@ -369,11 +379,15 @@ public class EntregarReportajeView extends JFrame {
         contentPane.add(lblPermisos);
 
         btnRestaurarVersion = new JButton("Restaurar versión");
-        btnRestaurarVersion.setBounds(445, 540, 160, 23);
+        btnRestaurarVersion.setBounds(446, 547, 160, 23);
         contentPane.add(btnRestaurarVersion);
 
+        btnSolicitarRevision = new JButton("Solicitar revisión");
+        btnSolicitarRevision.setBounds(1000, 517, 155, 23);
+        contentPane.add(btnSolicitarRevision);
+
         btnAceptar = new JButton("Entregar");
-        btnAceptar.setBounds(1055, 540, 109, 23);
+        btnAceptar.setBounds(1165, 517, 109, 23);
         contentPane.add(btnAceptar);
 
         JLabel lblDefinitivo = new JLabel("DEFINITIVO");
@@ -393,19 +407,19 @@ public class EntregarReportajeView extends JFrame {
         contentPane.add(lblVideosDefinitivos);
 
         JLabel lblImagenesBorrador = new JLabel("Imágenes");
-        lblImagenesBorrador.setBounds(1098, 318, 70, 14);
+        lblImagenesBorrador.setBounds(1026, 318, 70, 14);
         contentPane.add(lblImagenesBorrador);
 
         JLabel lblVideosBorrador = new JLabel("Videos");
-        lblVideosBorrador.setBounds(1098, 393, 46, 14);
+        lblVideosBorrador.setBounds(1026, 393, 46, 14);
         contentPane.add(lblVideosBorrador);
 
         comboImagenesDefinitivas = new JComboBox<>();
-        comboImagenesDefinitivas.setBounds(712, 335, 370, 22);
+        comboImagenesDefinitivas.setBounds(712, 335, 275, 22);
         contentPane.add(comboImagenesDefinitivas);
 
         comboVideosDefinitivos = new JComboBox<>();
-        comboVideosDefinitivos.setBounds(713, 418, 369, 22);
+        comboVideosDefinitivos.setBounds(713, 418, 275, 22);
         contentPane.add(comboVideosDefinitivos);
 
         btnCambiarFotoABorrador = new JButton("Cambiar foto a Borrador");
@@ -417,27 +431,27 @@ public class EntregarReportajeView extends JFrame {
         contentPane.add(btnCambiarVideoABorrador);
 
         comboImagenesBorrador = new JComboBox<>();
-        comboImagenesBorrador.setBounds(1108, 335, 366, 22);
+        comboImagenesBorrador.setBounds(1027, 335, 250, 22);
         contentPane.add(comboImagenesBorrador);
 
         comboVideosBorrador = new JComboBox<>();
-        comboVideosBorrador.setBounds(1108, 418, 366, 22);
+        comboVideosBorrador.setBounds(1026, 418, 248, 22);
         contentPane.add(comboVideosBorrador);
 
         btnCambiarFotoADefinitiva = new JButton("Cambiar a Definitivo");
-        btnCambiarFotoADefinitiva.setBounds(1110, 362, 138, 23);
+        btnCambiarFotoADefinitiva.setBounds(1026, 362, 138, 23);
         contentPane.add(btnCambiarFotoADefinitiva);
 
         btnEliminarFoto = new JButton("Eliminar foto");
-        btnEliminarFoto.setBounds(1258, 362, 100, 23);
+        btnEliminarFoto.setBounds(1174, 362, 100, 23);
         contentPane.add(btnEliminarFoto);
 
         btnCambiarVideoADefinitivo = new JButton("Cambiar a Definitivo");
-        btnCambiarVideoADefinitivo.setBounds(1108, 451, 138, 23);
+        btnCambiarVideoADefinitivo.setBounds(1026, 451, 138, 23);
         contentPane.add(btnCambiarVideoADefinitivo);
 
         btnEliminarVideo = new JButton("Eliminar video");
-        btnEliminarVideo.setBounds(1258, 451, 100, 23);
+        btnEliminarVideo.setBounds(1174, 451, 100, 23);
         contentPane.add(btnEliminarVideo);
     }
 }

@@ -44,6 +44,7 @@ public class EntregarReportajeController {
         view.addVersionListener(e -> cargarVersionSeleccionada());
         view.addAceptarListener(e -> aceptarCambios());
         view.addRestaurarVersionListener(e -> restaurarVersionSeleccionada());
+        view.addSolicitarRevisionListener(e -> solicitarRevisionReportaje());
         view.addAnadirImagenListener(e -> anadirMultimedia(TIPO_IMAGEN));
         view.addAnadirVideoListener(e -> anadirMultimedia(TIPO_VIDEO));
         view.addCambiarFotoABorradorListener(e -> cambiarEstadoMultimediaSeleccionada(view.getComboImagenesDefinitivas(),
@@ -77,6 +78,7 @@ public class EntregarReportajeController {
             view.setContenidoEditable(true);
             view.setMultimediaEditable(true);
             view.setTextoBotonAceptar("Entregar");
+            view.setSolicitarRevisionEnabled(false);
             view.setMensajePermisos("");
             view.setSeccionVersionesVisible(false);
             view.limpiarCampos();
@@ -84,6 +86,7 @@ public class EntregarReportajeController {
             eventos = model.getEventosEntregados(nombreReportero);
             view.setTituloEditable(false);
             view.setTextoBotonAceptar("Guardar cambios");
+            view.setSolicitarRevisionEnabled(false);
         }
 
         for (EntregarReportajeDTO evento : eventos) {
@@ -104,6 +107,7 @@ public class EntregarReportajeController {
             view.setContenidoEditable(isModoPendientes());
             view.setMultimediaEditable(false);
             view.setSeccionVersionesVisible(false);
+            view.setSolicitarRevisionEnabled(false);
             versionesCargadas = new ArrayList<>();
             return;
         }
@@ -121,6 +125,7 @@ public class EntregarReportajeController {
             view.setContenidoEditable(false);
             view.setMultimediaEditable(false);
             view.setSeccionVersionesVisible(false);
+            view.setSolicitarRevisionEnabled(false);
             view.setMensajePermisos("No se encontró contenido para el evento seleccionado.");
             return;
         }
@@ -131,9 +136,11 @@ public class EntregarReportajeController {
         view.setTituloEditable(false);
 
         boolean editableContenido = reportaje.isEditablePorReportero();
+        boolean bloqueadoRevision = reportaje.isBloqueadoPorRevision();
         view.setContenidoEditable(editableContenido);
         view.setSeccionVersionesVisible(editableContenido);
-        view.setMultimediaEditable(true);
+        view.setMultimediaEditable(!bloqueadoRevision);
+        view.setSolicitarRevisionEnabled(reportaje.puedeSolicitarRevision());
         view.setMensajePermisos(construirMensajePermisosEntregado(reportaje));
 
         cargarVersiones(reportaje.getId_reportaje());
@@ -148,6 +155,7 @@ public class EntregarReportajeController {
         view.setContenidoEditable(true);
         view.setMultimediaEditable(true);
         view.setSeccionVersionesVisible(false);
+        view.setSolicitarRevisionEnabled(false);
         view.setMensajePermisos(
                 "En pendientes también puedes añadir y modificar multimedia; el borrador se crea al guardar el primer archivo y cada ruta debe ser única.");
 
@@ -166,8 +174,11 @@ public class EntregarReportajeController {
     }
 
     private String construirMensajePermisosEntregado(EntregarReportajeDTO reportaje) {
+        if (reportaje.isBloqueadoPorRevision()) {
+            return "Revisión solicitada: el contenido del reportaje queda bloqueado y no se puede modificar.";
+        }
         if (reportaje.isEditablePorReportero()) {
-            return "Puedes modificar subtítulo/cuerpo, restaurar versiones y gestionar el multimedia que añadas.";
+            return "Puedes modificar subtítulo/cuerpo, restaurar versiones, gestionar multimedia y solicitar revisión.";
         }
         return "Puedes añadir multimedia; solo quien lo sube puede cambiar su estado o borrarlo.";
     }
@@ -301,6 +312,11 @@ public class EntregarReportajeController {
         if (actual == null) {
             return;
         }
+        if (isReportajeBloqueadoPorRevision(actual)) {
+            SwingUtil.showMessage("No se puede modificar multimedia: el reportaje está en revisión.", "Aviso",
+                    JOptionPane.WARNING_MESSAGE);
+            return;
+        }
 
         String ruta = TIPO_IMAGEN.equals(tipo) ? view.getRutaImagen().trim() : view.getRutaVideo().trim();
         if (ruta.isEmpty()) {
@@ -333,6 +349,13 @@ public class EntregarReportajeController {
             SwingUtil.showMessage("Debes seleccionar un " + etiqueta + ".", "Aviso", JOptionPane.WARNING_MESSAGE);
             return;
         }
+
+        EntregarReportajeDTO actual = getReportajeSeleccionadoParaMultimedia();
+        if (isReportajeBloqueadoPorRevision(actual)) {
+            SwingUtil.showMessage("No se puede modificar multimedia: el reportaje está en revisión.", "Aviso",
+                    JOptionPane.WARNING_MESSAGE);
+            return;
+        }
         if (!multimedia.isEditableMultimediaPorReportero()) {
             SwingUtil.showMessage("Solo el reportero que añadió este " + etiqueta + " puede cambiar su estado.",
                     "Aviso", JOptionPane.WARNING_MESSAGE);
@@ -348,6 +371,13 @@ public class EntregarReportajeController {
     private void eliminarMultimediaSeleccionada(EntregarReportajeDTO multimedia, String etiqueta) {
         if (multimedia == null) {
             SwingUtil.showMessage("Debes seleccionar un " + etiqueta + ".", "Aviso", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        EntregarReportajeDTO actual = getReportajeSeleccionadoParaMultimedia();
+        if (isReportajeBloqueadoPorRevision(actual)) {
+            SwingUtil.showMessage("No se puede modificar multimedia: el reportaje está en revisión.", "Aviso",
+                    JOptionPane.WARNING_MESSAGE);
             return;
         }
         if (!multimedia.isEditableMultimediaPorReportero()) {
@@ -399,6 +429,42 @@ public class EntregarReportajeController {
                     JOptionPane.WARNING_MESSAGE);
         }
         return actual;
+    }
+
+    private void solicitarRevisionReportaje() {
+        if (isModoPendientes()) {
+            SwingUtil.showMessage("Debes seleccionar un evento entregado para solicitar revisión.", "Aviso",
+                    JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        EntregarReportajeDTO eventoSeleccionado = (EntregarReportajeDTO) view.getComboEventos().getSelectedItem();
+        if (eventoSeleccionado == null) {
+            SwingUtil.showMessage("Debes seleccionar un evento entregado.", "Aviso", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        EntregarReportajeDTO actual = model.getReportajePorEvento(eventoSeleccionado.getId_evento(), nombreReportero);
+        if (actual == null) {
+            SwingUtil.showMessage("No se encontró reportaje para el evento seleccionado.", "Aviso",
+                    JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        if (!actual.puedeSolicitarRevision()) {
+            SwingUtil.showMessage("Solo el reportero que entregó el reportaje puede solicitar revisión una única vez.",
+                    "Aviso", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        model.solicitarRevision(actual.getId_reportaje());
+        SwingUtil.showMessage("Revisión solicitada correctamente. El contenido queda bloqueado para edición.", "Éxito",
+                JOptionPane.INFORMATION_MESSAGE);
+        recargarEventosSegunFiltro();
+    }
+
+    private boolean isReportajeBloqueadoPorRevision(EntregarReportajeDTO reportaje) {
+        return reportaje != null && !isModoPendientes() && reportaje.isBloqueadoPorRevision();
     }
 
     private void restaurarVersionSeleccionada() {

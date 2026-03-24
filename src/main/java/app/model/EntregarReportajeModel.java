@@ -22,8 +22,8 @@ public class EntregarReportajeModel {
 
     public List<EntregarReportajeDTO> getEventosEntregados(String nombreReportero) {
         String sql = "SELECT e.id_evento, e.descripcion, rep.id_reportaje, rep.id_reportero AS id_reportero_entrega, "
-                + "autor.nombre AS nombre_reportero_entrega, rep.titulo, rep.subtitulo, rep.cuerpo, "
-                + "CASE WHEN autor.nombre = ? THEN 1 ELSE 0 END AS editable "
+                + "autor.nombre AS nombre_reportero_entrega, rep.titulo, rep.subtitulo, rep.cuerpo, rep.estado_revision, "
+                + "CASE WHEN autor.nombre = ? AND rep.estado_revision = 'ENTREGADO' THEN 1 ELSE 0 END AS editable "
                 + "FROM Evento e "
                 + "JOIN Asignacion a ON e.id_evento = a.id_evento "
                 + "JOIN Reportero r ON a.id_reportero = r.id_reportero "
@@ -36,8 +36,8 @@ public class EntregarReportajeModel {
 
     public EntregarReportajeDTO getReportajePorEvento(int idEvento, String nombreReportero) {
         String sql = "SELECT e.id_evento, e.descripcion, rep.id_reportaje, rep.id_reportero AS id_reportero_entrega, "
-                + "autor.nombre AS nombre_reportero_entrega, rep.titulo, rep.subtitulo, rep.cuerpo, "
-                + "CASE WHEN autor.nombre = ? THEN 1 ELSE 0 END AS editable "
+                + "autor.nombre AS nombre_reportero_entrega, rep.titulo, rep.subtitulo, rep.cuerpo, rep.estado_revision, "
+                + "CASE WHEN autor.nombre = ? AND rep.estado_revision = 'ENTREGADO' THEN 1 ELSE 0 END AS editable "
                 + "FROM Evento e "
                 + "JOIN Asignacion a ON e.id_evento = a.id_evento "
                 + "JOIN Reportero r ON a.id_reportero = r.id_reportero "
@@ -51,7 +51,7 @@ public class EntregarReportajeModel {
 
     public EntregarReportajeDTO getBorradorPorEvento(int idEvento, String nombreReportero) {
         String sql = "SELECT e.id_evento, e.descripcion, rep.id_reportaje, rep.id_reportero AS id_reportero_entrega, "
-                + "autor.nombre AS nombre_reportero_entrega, rep.titulo, rep.subtitulo, rep.cuerpo, 1 AS editable "
+                + "autor.nombre AS nombre_reportero_entrega, rep.titulo, rep.subtitulo, rep.cuerpo, rep.estado_revision, 1 AS editable "
                 + "FROM Evento e "
                 + "JOIN Asignacion a ON e.id_evento = a.id_evento "
                 + "JOIN Reportero r ON a.id_reportero = r.id_reportero "
@@ -133,6 +133,11 @@ public class EntregarReportajeModel {
         String sql = "INSERT INTO Version_Reportaje (id_reportaje, fecha_cambio, hora_cambio, subtitulo_guardado, cuerpo_guardado) "
                 + "VALUES (?, date('now'), time('now'), ?, ?)";
         db.executeUpdate(sql, idReportaje, subtituloGuardado, cuerpoGuardado);
+    }
+
+    public void solicitarRevision(int idReportaje) {
+        String sql = "UPDATE Reportaje SET estado_revision = 'EN_REVISION' WHERE id_reportaje = ?";
+        db.executeUpdate(sql, idReportaje);
     }
 
     public void actualizarEstadoMultimedia(int idMultimedia, String nuevoEstado) {

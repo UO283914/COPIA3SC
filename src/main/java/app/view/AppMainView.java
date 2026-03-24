@@ -36,6 +36,7 @@ public class AppMainView {
 
 	// Botones de las listas verticales (Añade más aquí según necesitéis)
 	private JButton btnEntregarReportaje;
+	private JButton btnRevisarReportajes;
 	private JButton btnAccionAgente1;
 	private JButton btnAccionEmpresa1;
 	private JButton btnOfrecerReportajes; // Historia 33526
@@ -171,6 +172,9 @@ public class AppMainView {
 
 		btnEntregarReportaje = new JButton("EntregarReportaje");
 		panelBotonesReportero.add(btnEntregarReportaje);
+		btnRevisarReportajes = new JButton("Revisar reportajes");
+		panelBotonesReportero.add(btnRevisarReportajes);
+
 
 		// Columna 2: Botones de Agente de Prensa
 		JPanel panelBotonesAgente = new JPanel(new GridLayout(0, 1, 0, 10));
@@ -244,6 +248,10 @@ public class AppMainView {
 	// Listeners para las acciones de los roles
 	public void addEntregarReportajeListener(ActionListener listener) {
 		btnEntregarReportaje.addActionListener(listener);
+	}
+
+	public void addRevisarReportajesListener(ActionListener listener) {
+		btnRevisarReportajes.addActionListener(listener);
 	}
 
 	public void addAccionAgente1Listener(ActionListener listener) {

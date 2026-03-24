@@ -11,6 +11,7 @@ public class EntregarReportajeDTO {
     private String subtitulo;
     private String cuerpo;
     private Integer editable;
+    private String estado_revision;
 
     private Integer id_version;
     private String fecha_cambio;
@@ -100,6 +101,15 @@ public class EntregarReportajeDTO {
 
     public void setEditable(Integer editable) {
         this.editable = editable;
+    }
+
+
+    public String getEstado_revision() {
+        return estado_revision;
+    }
+
+    public void setEstado_revision(String estado_revision) {
+        this.estado_revision = estado_revision;
     }
 
     public Integer getId_version() {
@@ -200,6 +210,19 @@ public class EntregarReportajeDTO {
 
     public boolean isEditablePorReportero() {
         return editable != null && editable == 1;
+    }
+
+
+    public boolean isEstadoEntregadoParaEditar() {
+        return estado_revision == null || "ENTREGADO".equalsIgnoreCase(estado_revision);
+    }
+
+    public boolean isBloqueadoPorRevision() {
+        return !isEstadoEntregadoParaEditar();
+    }
+
+    public boolean puedeSolicitarRevision() {
+        return isEditablePorReportero() && isEstadoEntregadoParaEditar();
     }
 
     public boolean isEditableMultimediaPorReportero() {

@@ -46,7 +46,7 @@ public class AppMainController {
 
 		// Reportero
 		this.view.addEntregarReportajeListener(e -> ejecutarEntregarReportaje());
-
+		this.view.addRevisarReportajesListener(e -> ejecutarRevisarReportajes());
 		// Agente
 		this.view.addAccionAgente1Listener(e -> ejecutarAccionAgente1());
 		this.view.addAccionAgente2Listener(e -> ejecutarAccionAgente2());
@@ -97,6 +97,19 @@ public class AppMainController {
 			app.view.EntregarReportajeView vista = new app.view.EntregarReportajeView();
 			new app.controller.EntregarReportajeController(modelo, vista, reporteroSeleccionado);
 		}
+		
+		private void ejecutarRevisarReportajes() {
+			if (view.getComboReportero().getSelectedItem() == null) {
+				SwingUtil.showMessage("Debes seleccionar un reportero", "ERROR", JOptionPane.ERROR_MESSAGE);
+				return;
+			}
+			String reporteroSeleccionado = (String) view.getComboReportero().getSelectedItem();
+
+			app.model.RevisarReportajeModel modelo = new app.model.RevisarReportajeModel();
+			app.view.RevisarReportajesView vista = new app.view.RevisarReportajesView();
+			new app.controller.RevisarReportajeController(modelo, vista, reporteroSeleccionado);
+		}
+
 
 	// --- Lógica del Agente ---
 	private void ejecutarAccionAgente1() {
