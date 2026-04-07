@@ -282,6 +282,12 @@ UPDATE Reportaje
 SET id_reportero_responsable = 7, estado_entrega = 'ABIERTA'
 WHERE id_reportaje = 3;
 UPDATE Reportaje
+SET id_reportero_responsable = 1, estado_entrega = 'FINALIZADA', fecha_fin_entrega = '2026-10-26 18:00:00'
+WHERE id_reportaje = 20;
+UPDATE Reportaje
+SET id_reportero_responsable = 7, estado_entrega = 'FINALIZADA', fecha_fin_entrega = '2026-11-29 20:00:00'
+WHERE id_reportaje = 21;
+UPDATE Reportaje
 SET fecha_fin_embargo = '2026-12-01 00:00:00'
 WHERE id_reportaje IN (20, 21);
 
@@ -325,3 +331,44 @@ INSERT INTO Dieta_Alojamiento (pais, provincia, importe_diario) VALUES ('España
 INSERT INTO Dieta_Alojamiento (pais, provincia, importe_diario) VALUES ('Portugal', 'Lisboa', 110.00);
 INSERT INTO Dieta_Manutencion (pais, importe_diario) VALUES ('España', 42.00);
 INSERT INTO Dieta_Manutencion (pais, importe_diario) VALUES ('Portugal', 50.00);
+
+-- ===== HU34345: casos extra de pagos/tarifa para pruebas =====
+-- Nuevas empresas para cubrir combinaciones:
+-- 1) Con tarifa y al corriente de pago
+-- 2) Con tarifa pero NO al corriente
+-- 3) Sin tarifa pero reportaje pagado
+-- 4) Sin tarifa y sin reportaje pagado
+INSERT INTO Empresa_Comunicacion (id_empresa, nombre, email, acepta_embargos) VALUES (7, 'Noticias Norte', 'redaccion@noticiasnorte.es', true);
+INSERT INTO Empresa_Comunicacion (id_empresa, nombre, email, acepta_embargos) VALUES (8, 'Canal Sur 8', 'info@canalsur8.tv', true);
+INSERT INTO Empresa_Comunicacion (id_empresa, nombre, email, acepta_embargos) VALUES (9, 'Revista Horizonte', 'contacto@horizonte.com', true);
+INSERT INTO Empresa_Comunicacion (id_empresa, nombre, email, acepta_embargos) VALUES (10, 'Diario Delta', 'editorial@diariodelta.es', true);
+
+-- Relación temática mínima para las nuevas empresas
+INSERT INTO Empresa_Tematica (id_empresa, id_tematica) VALUES (7, 1);
+INSERT INTO Empresa_Tematica (id_empresa, id_tematica) VALUES (8, 2);
+INSERT INTO Empresa_Tematica (id_empresa, id_tematica) VALUES (9, 4);
+INSERT INTO Empresa_Tematica (id_empresa, id_tematica) VALUES (10, 5);
+
+-- Tarifas con Agencia 1 (evento 20) para 2 empresas: una pagada y otra no pagada
+INSERT INTO Agencia_Empresa_Tarifa (id_agencia, id_empresa, tarifa_plana, fecha_inicio, fecha_fin, al_corriente_pago)
+VALUES (1, 7, 1400.00, '2026-01-01', '2026-12-31', true);
+INSERT INTO Agencia_Empresa_Tarifa (id_agencia, id_empresa, tarifa_plana, fecha_inicio, fecha_fin, al_corriente_pago)
+VALUES (1, 8, 1600.00, '2026-01-01', '2026-12-31', false);
+
+-- Ofrecimientos en evento finalizado (20, Agencia 1) para todas las combinaciones
+INSERT INTO Ofrecimiento (id_evento, id_empresa, estado, tiene_acceso, acceso_especial_embargo, reportaje_pagado, fecha_pago_reportaje, descargado)
+VALUES (20, 7, 'ACEPTADO', false, false, false, NULL, false); -- con tarifa pagada
+INSERT INTO Ofrecimiento (id_evento, id_empresa, estado, tiene_acceso, acceso_especial_embargo, reportaje_pagado, fecha_pago_reportaje, descargado)
+VALUES (20, 8, 'ACEPTADO', false, false, false, NULL, false); -- con tarifa NO pagada
+INSERT INTO Ofrecimiento (id_evento, id_empresa, estado, tiene_acceso, acceso_especial_embargo, reportaje_pagado, fecha_pago_reportaje, descargado)
+VALUES (20, 9, 'ACEPTADO', false, false, true, '2026-10-28 09:30:00', false); -- sin tarifa y reportaje pagado
+INSERT INTO Ofrecimiento (id_evento, id_empresa, estado, tiene_acceso, acceso_especial_embargo, reportaje_pagado, fecha_pago_reportaje, descargado)
+VALUES (20, 10, 'ACEPTADO', false, false, false, NULL, false); -- sin tarifa y sin pagar
+
+-- Casos adicionales en otro evento finalizado (21, Agencia 4)
+INSERT INTO Agencia_Empresa_Tarifa (id_agencia, id_empresa, tarifa_plana, fecha_inicio, fecha_fin, al_corriente_pago)
+VALUES (4, 9, 1250.00, '2026-06-01', '2026-12-31', true);
+INSERT INTO Ofrecimiento (id_evento, id_empresa, estado, tiene_acceso, acceso_especial_embargo, reportaje_pagado, fecha_pago_reportaje, descargado)
+VALUES (21, 9, 'ACEPTADO', false, false, false, NULL, false); -- con tarifa pagada en otra agencia
+INSERT INTO Ofrecimiento (id_evento, id_empresa, estado, tiene_acceso, acceso_especial_embargo, reportaje_pagado, fecha_pago_reportaje, descargado)
+VALUES (21, 10, 'ACEPTADO', false, false, true, '2026-11-30 12:00:00', false); -- sin tarifa y reportaje pagado

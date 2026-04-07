@@ -5,6 +5,7 @@ public class EventoDisplayDTO {
 	private String descripcion;
 	private String fecha;
 	private String tematicas;
+	private String finalizado;
 
 	public Integer getIdEvento() { return idEvento; }
 	public void setIdEvento(Integer idEvento) { this.idEvento = idEvento; }
@@ -18,4 +19,7 @@ public class EventoDisplayDTO {
 
 	public String getTematicas() { return tematicas; }
 	public void setTematicas(String tematicas) { this.tematicas = tematicas; }
+
+	public String getFinalizado() { return finalizado; }
+	public void setFinalizado(String finalizado) { this.finalizado = finalizado; }
 }
