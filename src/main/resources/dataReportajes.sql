@@ -19,7 +19,6 @@ INSERT INTO Reportero (id_reportero, nombre, telefono, id_agencia, tipo_reporter
 INSERT INTO Reportero (id_reportero, nombre, telefono, id_agencia, tipo_reportero) VALUES (7, 'Sara Carbonero', '600654321', 4, 'BASE');
 INSERT INTO Reportero (id_reportero, nombre, telefono, id_agencia, tipo_reportero) VALUES (8, 'Iñaki Gabilondo', '600987654', 4, 'BASE');
 INSERT INTO Reportero (id_reportero, nombre, telefono, id_agencia, tipo_reportero) VALUES (9, 'Julia Otero', '600112233', 1, 'BASE');
-INSERT INTO Reportero (id_reportero, nombre, telefono, id_agencia, tipo_reportero) VALUES (10, 'Jordi Evole', '600445566', 2, 'BASE');
 INSERT INTO Reportero (id_reportero, nombre, telefono, id_agencia, tipo_reportero) VALUES (11, 'Vicente Valles', '600111333', 1, 'GRÁFICO');
 INSERT INTO Reportero (id_reportero, nombre, telefono, id_agencia, tipo_reportero) VALUES (12, 'Monica Carrillo', '600222444', 2, 'CAMARÓGRAFO');
 
@@ -372,3 +371,26 @@ INSERT INTO Ofrecimiento (id_evento, id_empresa, estado, tiene_acceso, acceso_es
 VALUES (21, 9, 'ACEPTADO', false, false, false, NULL, false); -- con tarifa pagada en otra agencia
 INSERT INTO Ofrecimiento (id_evento, id_empresa, estado, tiene_acceso, acceso_especial_embargo, reportaje_pagado, fecha_pago_reportaje, descargado)
 VALUES (21, 10, 'ACEPTADO', false, false, true, '2026-11-30 12:00:00', false); -- sin tarifa y reportaje pagado
+
+-- ==============================================================================
+-- ===== DATOS DE PRUEBA EXCLUSIVOS PARA EMBARGOS CADUCADOS (HU 34348 y 34351) ==
+-- ==============================================================================
+
+-- 1. Creamos el evento 200 para la Agencia 1 (Agencia Central de Noticias)
+INSERT INTO Evento (id_evento, descripcion, fecha, id_agencia, precio) 
+VALUES (200, 'Exclusiva Pasada: El gran secreto', '2024-05-10', 1, 300.00);
+
+-- 2. LA CLAVE: Le asignamos la temática 1 (Política). Así el Diario El Mañana lo puede ver
+INSERT INTO Evento_Tematica (id_evento, id_tematica) VALUES (200, 1);
+
+-- 3. Le asignamos la reportera Ana Blanco (ID 1)
+INSERT INTO Asignacion (id_evento, id_reportero, es_responsable) 
+VALUES (200, 1, true);
+
+-- 4. Creamos el reportaje con la fecha de embargo CADUCADA en 2024
+INSERT INTO Reportaje (id_reportaje, id_evento, id_reportero, titulo, subtitulo, cuerpo, fecha_entrega, fecha_fin_embargo) 
+VALUES (200, 200, 1, 'Secreto revelado', 'Ya es público', 'Texto del reportaje libre...', '2024-05-11 10:00:00', '2024-12-31 23:59:59');
+
+-- 5. Se lo ofrecemos al Diario El Mañana (ID 1) como PENDIENTE
+INSERT INTO Ofrecimiento (id_evento, id_empresa, estado, tiene_acceso, acceso_especial_embargo) 
+VALUES (200, 1, 'PENDIENTE', false, false);

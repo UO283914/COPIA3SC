@@ -19,7 +19,10 @@ public class gestionarOfrecimientosReportajesView {
     private JTextField txtPrecioMin;
     private JTextField txtPrecioMax;
     private JButton btnAplicarFiltros;
-    private JButton btnLimpiarFiltros; // NUEVO BOTÓN
+    private JButton btnLimpiarFiltros; 
+    
+    // NUEVO COMPONENTE HU 34351
+    private JCheckBox chkFiltroEmbargo;
     
     private JButton btnAceptar;
     private JButton btnRechazar;
@@ -35,7 +38,7 @@ public class gestionarOfrecimientosReportajesView {
     private void initialize() {
         frame = new JFrame();
         frame.setTitle("Gestión de Ofrecimientos");
-        frame.setBounds(100, 100, 950, 600); 
+        frame.setBounds(100, 100, 1050, 600); // Ensanchado para las nuevas columnas
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
         JPanel contentPane = new JPanel();
@@ -44,7 +47,7 @@ public class gestionarOfrecimientosReportajesView {
         frame.setContentPane(contentPane);
 
         // --- CABECERA Y FILTROS ---
-        JPanel panelNorte = new JPanel(new GridLayout(4, 1)); 
+        JPanel panelNorte = new JPanel(new GridLayout(5, 1)); // CAMBIADO A 5
         
         lblEmpresaActual = new JLabel("🏢 Empresa: ");
         panelNorte.add(lblEmpresaActual);
@@ -77,7 +80,7 @@ public class gestionarOfrecimientosReportajesView {
         txtPrecioMin = new JTextField(6);
         txtPrecioMax = new JTextField(6);
         btnAplicarFiltros = new JButton("Aplicar Filtros");
-        btnLimpiarFiltros = new JButton("Limpiar Filtros"); // INICIALIZAMOS EL BOTÓN
+        btnLimpiarFiltros = new JButton("Limpiar Filtros"); 
         
         panelFiltrosPrecio.add(new JLabel("Precio Mínimo (€): "));
         panelFiltrosPrecio.add(txtPrecioMin);
@@ -86,8 +89,14 @@ public class gestionarOfrecimientosReportajesView {
         panelFiltrosPrecio.add(new JLabel("   ")); 
         panelFiltrosPrecio.add(btnAplicarFiltros);
         panelFiltrosPrecio.add(new JLabel(" ")); 
-        panelFiltrosPrecio.add(btnLimpiarFiltros); // LO AÑADIMOS A LA PANTALLA
+        panelFiltrosPrecio.add(btnLimpiarFiltros); 
         panelNorte.add(panelFiltrosPrecio);
+        
+        // Fila 4: Embargos (NUEVO)
+        JPanel panelFiltrosEmbargo = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        chkFiltroEmbargo = new JCheckBox("Mostrar solo reportajes con embargo ACTIVO");
+        panelFiltrosEmbargo.add(chkFiltroEmbargo);
+        panelNorte.add(panelFiltrosEmbargo);
         
         contentPane.add(panelNorte, BorderLayout.NORTH);
 
@@ -119,6 +128,7 @@ public class gestionarOfrecimientosReportajesView {
     public JComboBox<String> getComboTematicas() { return comboTematicas; }
     public JTextField getTxtPrecioMin() { return txtPrecioMin; }
     public JTextField getTxtPrecioMax() { return txtPrecioMax; }
+    public JCheckBox getChkFiltroEmbargo() { return chkFiltroEmbargo; } // NUEVO
     
     public JButton getBtnAceptar() { return btnAceptar; }
     public JButton getBtnRechazar() { return btnRechazar; }
@@ -133,12 +143,13 @@ public class gestionarOfrecimientosReportajesView {
     public void addVolverListener(ActionListener listener) { btnVolver.addActionListener(listener); }
     
     public void addAplicarFiltrosListener(ActionListener listener) { btnAplicarFiltros.addActionListener(listener); }
-    public void addLimpiarFiltrosListener(ActionListener listener) { btnLimpiarFiltros.addActionListener(listener); } // NUEVO
+    public void addLimpiarFiltrosListener(ActionListener listener) { btnLimpiarFiltros.addActionListener(listener); } 
+    public void addChkFiltroEmbargoListener(ActionListener listener) { chkFiltroEmbargo.addActionListener(listener); } // NUEVO
     
     public void addFiltroEstadoListener(ActionListener listener) { 
         rdbtnPendientes.addActionListener(listener);
         rdbtnConDecision.addActionListener(listener);
     }
     public void addChkEspecializacionListener(ActionListener listener) { chkEspecializacion.addActionListener(listener); }
-    public void addComboTematicasListener(ActionListener listener) { comboTematicas.addActionListener(listener); } // RESTAURADO
+    public void addComboTematicasListener(ActionListener listener) { comboTematicas.addActionListener(listener); } 
 }

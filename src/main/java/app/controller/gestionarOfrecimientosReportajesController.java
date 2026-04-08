@@ -35,14 +35,15 @@ public class gestionarOfrecimientosReportajesController {
         view.addEliminarDecisionListener(e -> tomarDecision("PENDIENTE")); 
         view.addVolverListener(e -> view.getFrame().dispose());
         
-        // Listeners de los filtros
         view.addFiltroEstadoListener(e -> cargarTabla());
         view.addChkEspecializacionListener(e -> cargarComboTematicas()); 
-        view.addComboTematicasListener(e -> cargarTabla()); // ¡RESTAURADO! Ahora filtra al instante
+        view.addComboTematicasListener(e -> cargarTabla()); 
         
-        // Listeners de Precios y Limpieza
         view.addAplicarFiltrosListener(e -> cargarTabla());
-        view.addLimpiarFiltrosListener(e -> limpiarFiltros()); // NUEVO
+        view.addLimpiarFiltrosListener(e -> limpiarFiltros()); 
+        
+        // NUEVO LISTENER HU 34351
+        view.addChkFiltroEmbargoListener(e -> cargarTabla());
         
         view.getTabOfrecimientos().getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             @Override
@@ -58,15 +59,10 @@ public class gestionarOfrecimientosReportajesController {
         view.getFrame().setVisible(true);
     }
 
-    // NUEVO MÉTODO PARA VACIAR TODO
     private void limpiarFiltros() {
-        // 1. Vaciamos únicamente las cajas de texto de los precios
         view.getTxtPrecioMin().setText("");
         view.getTxtPrecioMax().setText("");
-        
-        // 2. Refrescamos la tabla directamente. 
-        // Como el estado y la temática no los hemos tocado, la tabla se 
-        // recargará manteniendo esos filtros, pero ya sin límite de precio.
+        view.getChkFiltroEmbargo().setSelected(false); // Limpiamos el checkbox nuevo
         cargarTabla(); 
     }
 
@@ -93,7 +89,6 @@ public class gestionarOfrecimientosReportajesController {
     private void cargarTabla() {
         if (ajustandoDesplegable) return; 
         
-        // 1. Recoger filtros
         String estadoFiltro = view.getRdbtnPendientes().isSelected() ? "PENDIENTE" : "CON_DECISION";
         String tematicaSeleccionada = (String) view.getComboTematicas().getSelectedItem();
         if (tematicaSeleccionada == null) tematicaSeleccionada = "Todas las temáticas";
@@ -112,14 +107,17 @@ public class gestionarOfrecimientosReportajesController {
             return; 
         }
 
-        // 2. Ejecutar consulta unificada al Modelo
-        listaMostrada = model.getOfrecimientosFiltrados(nombreEmpresaActual, estadoFiltro, tematicaSeleccionada, precioMin, precioMax);
+        // Leemos el estado del checkbox
+        boolean soloEmbargosActivos = view.getChkFiltroEmbargo().isSelected();
+
+        // Llamamos al modelo pasándole el boolean (soluciona el error)
+        listaMostrada = model.getOfrecimientosFiltrados(nombreEmpresaActual, estadoFiltro, tematicaSeleccionada, precioMin, precioMax, soloEmbargosActivos);
         
         view.getBtnEliminarDecision().setVisible(!estadoFiltro.equals("PENDIENTE"));
         
-        // 3. Cargar tabla
+        // Añadidas las dos nuevas columnas: "accesoEspecialPantalla", "fechaFinEmbargoPantalla"
         TableModel tmodel = SwingUtil.getTableModelFromPojos(listaMostrada, 
-                new String[] {"idEvento", "descripcionEvento", "fechaEvento", "nombreAgencia", "precio", "estado", "accesoVisible"});
+                new String[] {"idEvento", "descripcionEvento", "fechaEvento", "nombreAgencia", "precio", "estado", "accesoVisible", "accesoEspecialPantalla", "fechaFinEmbargoPantalla"});
         
         view.getTabOfrecimientos().setModel(tmodel);
         SwingUtil.autoAdjustColumns(view.getTabOfrecimientos());
@@ -139,9 +137,11 @@ public class gestionarOfrecimientosReportajesController {
 
         gestionarOfrecimientosReportajesDTO dtoSeleccionado = listaMostrada.get(filaSel);
         boolean estaAceptado = "ACEPTADO".equals(dtoSeleccionado.getEstado());
-        boolean tieneAcceso = dtoSeleccionado.getTieneAcceso() != null && dtoSeleccionado.getTieneAcceso() == 1;
+        boolean tieneAccesoTotal = dtoSeleccionado.getTieneAcceso() != null && dtoSeleccionado.getTieneAcceso() == 1;
+        boolean tieneAccesoEspecial = dtoSeleccionado.getAccesoEspecialEmbargo() != null && dtoSeleccionado.getAccesoEspecialEmbargo() == 1;
 
-        if (estaAceptado && tieneAcceso) {
+        // Si tiene el acceso total concedido (pero no el especial de embargo), bloqueamos botones
+        if (estaAceptado && tieneAccesoTotal && !tieneAccesoEspecial) {
             view.getBtnAceptar().setEnabled(false);
             view.getBtnRechazar().setEnabled(false);
             view.getBtnEliminarDecision().setEnabled(false);

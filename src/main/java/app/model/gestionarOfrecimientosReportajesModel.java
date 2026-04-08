@@ -21,35 +21,38 @@ public class gestionarOfrecimientosReportajesModel {
         return db.executeQueryArray(sql, nombreEmpresa);
     }
 
-    // MÉTODO UNIFICADO: Recibe todos los filtros y construye el SQL dinámicamente
+    // MÉTODO UNIFICADO ACTUALIZADO
     public List<gestionarOfrecimientosReportajesDTO> getOfrecimientosFiltrados(
-            String nombreEmpresa, String estadoFiltro, String tematicaFiltro, Double precioMin, Double precioMax) {
+            String nombreEmpresa, String estadoFiltro, String tematicaFiltro, 
+            Double precioMin, Double precioMax, boolean soloEmbargosActivos) { // Añadido boolean
         
         List<Object> parametros = new ArrayList<>();
         
+        // Añadimos las dos columnas nuevas y el JOIN
         String sql = "SELECT e.id_evento AS idEvento, " +
                      "e.descripcion AS descripcionEvento, " +
                      "e.fecha AS fechaEvento, " +
                      "a.nombre AS nombreAgencia, " +
-                     "e.precio AS precio, " + // Ahora traemos el precio
+                     "e.precio AS precio, " + 
                      "o.estado AS estado, " +
-                     "o.tiene_acceso AS tieneAcceso " + 
+                     "o.tiene_acceso AS tieneAcceso, " +
+                     "o.acceso_especial_embargo AS accesoEspecialEmbargo, " + // NUEVO
+                     "rep.fecha_fin_embargo AS fechaFinEmbargo " + // NUEVO
                      "FROM Ofrecimiento o " +
                      "JOIN Evento e ON o.id_evento = e.id_evento " +
                      "JOIN Agencia a ON e.id_agencia = a.id_agencia " +
                      "JOIN Empresa_Comunicacion emp ON o.id_empresa = emp.id_empresa " +
+                     "LEFT JOIN Reportaje rep ON e.id_evento = rep.id_evento " + // NUEVO JOIN
                      "WHERE emp.nombre = ? ";
         
         parametros.add(nombreEmpresa);
 
-        // 1. Filtro de Estado
         if (estadoFiltro.equals("PENDIENTE")) {
             sql += " AND o.estado = 'PENDIENTE'";
         } else {
             sql += " AND o.estado IN ('ACEPTADO', 'RECHAZADO')";
         }
 
-        // 2. Filtro de Temática
         if (tematicaFiltro != null && !tematicaFiltro.equals("Todas las temáticas")) {
             sql += " AND e.id_evento IN (SELECT id_evento FROM Evento_Tematica evt " +
                    " JOIN Tematica t ON evt.id_tematica = t.id_tematica " +
@@ -57,7 +60,6 @@ public class gestionarOfrecimientosReportajesModel {
             parametros.add(tematicaFiltro);
         }
         
-        // 3. Filtro de Precios (HU 34085)
         if (precioMin != null) {
             sql += " AND e.precio >= ?";
             parametros.add(precioMin);
@@ -65,6 +67,11 @@ public class gestionarOfrecimientosReportajesModel {
         if (precioMax != null) {
             sql += " AND e.precio <= ?";
             parametros.add(precioMax);
+        }
+
+        // 4. NUEVO FILTRO HU 34351 (Embargos activos)
+        if (soloEmbargosActivos) {
+            sql += " AND rep.fecha_fin_embargo IS NOT NULL AND rep.fecha_fin_embargo > date('now') ";
         }
                      
         return db.executeQueryPojo(gestionarOfrecimientosReportajesDTO.class, sql, parametros.toArray());
