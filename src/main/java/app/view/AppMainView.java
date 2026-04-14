@@ -44,6 +44,7 @@ public class AppMainView {
 	private JButton btnAccionInformeEventos;
 	private JButton btnAccederReportajes; // Historia 33529
     private JButton btnInformeReportajes; // NUEVO BOTÓN: Historia 34083
+    private JButton btnInformeIngresos;
 	
 	// Botones de Base de Datos
 	private JButton btnCrearBD;
@@ -67,7 +68,7 @@ public class AppMainView {
 					// El controlador se encarga de darle vida a los botones
 					AppMainController controlador = new AppMainController(vista,modelo);
 
-					// Mostramos la ventana
+					// Mostramos la ventana	
 
 
 				} catch (Exception e) {
@@ -201,6 +202,9 @@ public class AppMainView {
 
 		btnOfrecerReportajes = new JButton("Ofrecer reportajes");
 		panelBotonesAgente.add(btnOfrecerReportajes);
+		
+		btnInformeIngresos = new JButton("Consultar Informe de Ingresos");
+		panelBotonesAgente.add(btnInformeIngresos);
 
 		
 		// Columna 3: Botones de Empresa de Comunicación
@@ -288,6 +292,10 @@ public class AppMainView {
     // NUEVO: Listener para el botón del informe
     public void addInformeReportajesListener(ActionListener listener) {
         btnInformeReportajes.addActionListener(listener);
+    }
+    
+    public void addInformeIngresosListener(ActionListener listener) {
+        btnInformeIngresos.addActionListener(listener);
     }
 
 	public JFrame getFrame() {

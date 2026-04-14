@@ -66,6 +66,9 @@ public class AppMainController {
         
         // NUEVO: Conectamos el clic del botón con su método
         view.addInformeReportajesListener(e -> ejecutarInformeReportajes());
+        
+        this.view.addInformeIngresosListener(e -> ejecutarInformeIngresos());
+
 	}
 
 	public void initView() {
@@ -297,5 +300,26 @@ public class AppMainController {
         
         new app.controller.informeReportajesController(modelo, vista, empresaSeleccionada);
     }
+    
+    private void ejecutarInformeIngresos() {
+		// 1. Validamos que haya una AGENCIA seleccionada
+		if (view.getComboAgente().getSelectedItem() == null) {
+			giis.demo.util.SwingUtil.showMessage("Debes seleccionar una agencia de prensa", "ERROR", javax.swing.JOptionPane.ERROR_MESSAGE);
+			return;
+		}
+		
+		// 2. Capturamos el nombre de la agencia seleccionada en el desplegable
+		String agenciaSeleccionada = (String) view.getComboAgente().getSelectedItem();
+		
+		// 3. Instanciamos el MVC del informe
+		app.model.InformeIngresosModel modelo = new app.model.InformeIngresosModel();
+		app.view.InformeIngresosView vista = new app.view.InformeIngresosView();
+		
+		// 4. Lanzamos el controlador pasándole el nombre de la agencia
+		app.controller.InformeIngresosController controlador = new app.controller.InformeIngresosController(modelo, vista, agenciaSeleccionada);
+		
+		// 5. ¡AQUÍ ESTABA EL ERROR! Faltaba decirle a la vista que se mostrara
+		vista.getFrame().setVisible(true);
+	}
 	
 }
