@@ -59,6 +59,7 @@ CREATE TABLE Evento (
     disponible_freelance boolean DEFAULT false,
     pais varchar(120),
     provincia varchar(120),
+    finalizado boolean DEFAULT false,
     CHECK (fecha_inicio IS NULL OR fecha_fin IS NULL OR fecha_inicio <= fecha_fin),
     FOREIGN KEY (id_agencia) REFERENCES Agencia (id_agencia)
 );

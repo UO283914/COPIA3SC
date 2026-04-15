@@ -270,6 +270,9 @@ UPDATE Asignacion SET es_responsable = true WHERE id_evento = 6 AND id_reportero
 UPDATE Asignacion SET estado_asignacion = 'FINALIZADA', fecha_fin_asignacion = '2026-03-11 18:00:00' WHERE id_evento = 1;
 UPDATE Asignacion SET estado_asignacion = 'FINALIZADA', fecha_fin_asignacion = '2026-03-16 19:00:00' WHERE id_evento = 2;
 
+-- Estado finalizado del evento (fuente de verdad para cierre de asignación)
+UPDATE Evento SET finalizado = true WHERE id_evento IN (1, 2, 20, 21);
+
 -- Finalización de entrega de reportajes y embargo
 UPDATE Reportaje
 SET id_reportero_responsable = 1, estado_entrega = 'FINALIZADA', fecha_fin_entrega = '2026-03-11 20:00:00'

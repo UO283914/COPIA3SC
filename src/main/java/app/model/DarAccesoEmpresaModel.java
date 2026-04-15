@@ -5,15 +5,14 @@ import app.dto.EventoDisplayDTO;
 import app.dto.EmpresaDisplayDTO;
 import java.util.List;
 
-
 public class DarAccesoEmpresaModel {
 
 	private Database db = new Database();
 
-	// 1. Eventos de la agencia que SÍ tienen reportaje FINALIZADO por responsable
+	// 1. Eventos de la agencia con reportaje, mostrando estado finalizado real desde Evento
 	public List<EventoDisplayDTO> getEventosConReportaje(String nombreAgencia) {
 		String sql = "SELECT e.id_evento, e.descripcion, e.fecha, "
-				+ "'SÍ' AS finalizado, "
+				+ "CASE WHEN COALESCE(e.finalizado, 0) = 1 THEN 'SÍ' ELSE 'NO' END AS finalizado, "
 				+ "COALESCE(GROUP_CONCAT(DISTINCT t.nombre), 'Sin temática') AS tematicas "
 				+ "FROM Evento e "
 				+ "JOIN Agencia a ON e.id_agencia = a.id_agencia "
@@ -21,9 +20,7 @@ public class DarAccesoEmpresaModel {
 				+ "LEFT JOIN Evento_Tematica et ON e.id_evento = et.id_evento "
 				+ "LEFT JOIN Tematica t ON et.id_tematica = t.id_tematica "
 				+ "WHERE a.nombre = ? "
-				+ "AND r.estado_entrega = 'FINALIZADA' "
-				+ "AND r.id_reportero_responsable IS NOT NULL "
-				+ "GROUP BY e.id_evento, e.descripcion, e.fecha";
+				+ "GROUP BY e.id_evento, e.descripcion, e.fecha, e.finalizado";
 		return db.executeQueryPojo(EventoDisplayDTO.class, sql, nombreAgencia);
 	}
 
@@ -37,14 +34,12 @@ public class DarAccesoEmpresaModel {
 				+ "FROM Empresa_Comunicacion emp "
 				+ "JOIN Ofrecimiento o ON emp.id_empresa = o.id_empresa "
 				+ "JOIN Evento ev ON ev.id_evento = o.id_evento "
-				+ "JOIN Reportaje r ON r.id_evento = ev.id_evento "
 				+ "LEFT JOIN Agencia_Empresa_Tarifa aet "
 				+ "ON aet.id_agencia = ev.id_agencia AND aet.id_empresa = emp.id_empresa "
 				+ "WHERE o.id_evento = ? "
 				+ "AND o.estado = 'ACEPTADO' "
 				+ "AND o.tiene_acceso = ? "
-				+ "AND r.estado_entrega = 'FINALIZADA' "
-				+ "AND r.id_reportero_responsable IS NOT NULL ";
+				+ "AND COALESCE(ev.finalizado, 0) = 1";
 		return db.executeQueryPojo(EmpresaDisplayDTO.class, sql, idEvento, conAcceso ? 1 : 0);
 	}
 
@@ -54,7 +49,7 @@ public class DarAccesoEmpresaModel {
 		}
 		if (!isEventoDistribuible(idEvento)) {
 			throw new giis.demo.util.ApplicationException(
-					"No se puede conceder acceso: el reportaje no está finalizado por el reportero responsable.");
+					"No se puede conceder acceso: el evento no está finalizado.");
 		}
 		if (!isEmpresaElegibleParaAcceso(idEvento, idEmpresa)) {
 			throw new giis.demo.util.ApplicationException(
@@ -73,13 +68,9 @@ public class DarAccesoEmpresaModel {
 	}
 
 	private boolean isEventoDistribuible(Integer idEvento) {
-		String sql = "SELECT COUNT(*) "
-				+ "FROM Reportaje r "
-				+ "WHERE r.id_evento = ? "
-				+ "AND r.estado_entrega = 'FINALIZADA' "
-				+ "AND r.id_reportero_responsable IS NOT NULL";
+		String sql = "SELECT COALESCE(finalizado, 0) FROM Evento WHERE id_evento = ?";
 		List<Object[]> rows = db.executeQueryArray(sql, idEvento);
-		return rows != null && !rows.isEmpty() && ((Number) rows.get(0)[0]).intValue() > 0;
+		return rows != null && !rows.isEmpty() && ((Number) rows.get(0)[0]).intValue() == 1;
 	}
 
 	private boolean isEmpresaElegibleParaAcceso(Integer idEvento, Integer idEmpresa) {

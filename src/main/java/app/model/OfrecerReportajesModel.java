@@ -26,9 +26,9 @@ public class OfrecerReportajesModel {
                 + "LEFT JOIN Evento_Tematica et ON et.id_evento = e.id_evento "
                 + "LEFT JOIN Tematica t ON t.id_tematica = et.id_tematica "
                 + "WHERE ag.nombre = ? "
-                + "GROUP BY e.id_evento, e.descripcion, rep.fecha_fin_embargo "
+                + "GROUP BY e.id_evento, e.descripcion, rep.fecha_fin_embargo, e.finalizado "
                 + "HAVING COUNT(a.id_reportero) > 0 "
-                + "AND SUM(CASE WHEN COALESCE(a.estado_asignacion, 'ABIERTA') <> 'FINALIZADA' THEN 1 ELSE 0 END) = 0";
+                + "AND COALESCE(e.finalizado, 0) = 1";
 
         return db.executeQueryPojo(OfrecerReportajesDTO.class, sql, nombreAgencia);
     }
