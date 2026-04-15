@@ -72,15 +72,17 @@ public class AsignacionReporterosController {
         }
 
         TableModel tmodel = SwingUtil.getTableModelFromPojos(eventos,
-                new String[] { "idEvento", "descripcion", "fecha", "tematicas" });
+                new String[] { "idEvento", "descripcion", "fechaInicio", "fechaFin", "tematicas" });
         view.getTabEventos().setModel(tmodel);
         SwingUtil.autoAdjustColumns(view.getTabEventos());
 
         view.getTabEventos().getColumnModel().getColumn(0).setMinWidth(0);
         view.getTabEventos().getColumnModel().getColumn(0).setMaxWidth(0);
         view.getTabEventos().getColumnModel().getColumn(0).setWidth(0);
-        view.getTabEventos().getColumnModel().getColumn(2).setMinWidth(80);
-        view.getTabEventos().getColumnModel().getColumn(2).setMaxWidth(100);
+        view.getTabEventos().getColumnModel().getColumn(2).setMinWidth(90);
+        view.getTabEventos().getColumnModel().getColumn(2).setMaxWidth(120);
+        view.getTabEventos().getColumnModel().getColumn(3).setMinWidth(90);
+        view.getTabEventos().getColumnModel().getColumn(3).setMaxWidth(120);
         view.getTabEventos().setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_ALL_COLUMNS);
         view.getTabEventos().setRowHeight(25);
 
@@ -100,12 +102,13 @@ public class AsignacionReporterosController {
         int filaSeleccionada = view.getTabEventos().getSelectedRow();
         if (filaSeleccionada >= 0) {
             Integer idEvento = (Integer) view.getTabEventos().getValueAt(filaSeleccionada, 0);
-            String fecha = (String) view.getTabEventos().getValueAt(filaSeleccionada, 2);
+            String fechaInicio = (String) view.getTabEventos().getValueAt(filaSeleccionada, 2);
+            String fechaFin = (String) view.getTabEventos().getValueAt(filaSeleccionada, 3);
             boolean soloEspecializados = view.getCbFiltroTematicaReporteros().getSelectedIndex() == 1;
             String tipoReportero = (String) view.getCbFiltroTipoReportero().getSelectedItem();
 
-            reporterosDisponiblesVisualmente = model.getReporterosDisponibles(fecha, nombreAgencia, idEvento,
-                    soloEspecializados, tipoReportero);
+            reporterosDisponiblesVisualmente = model.getReporterosDisponibles(fechaInicio, fechaFin, nombreAgencia,
+                    idEvento, soloEspecializados, tipoReportero);
             reporterosAsignadosVisualmente = model.getReporterosAsignados(idEvento);
             eventoFinalizadoSeleccionado = model.isAsignacionFinalizada(idEvento);
             responsableSeleccionadoId = obtenerResponsableDeAsignados(reporterosAsignadosVisualmente);
@@ -211,11 +214,13 @@ public class AsignacionReporterosController {
 
             for (ReporteroDisplayDTO rep : reporterosAsignadosVisualmente) {
                 boolean esResponsable = rep.getIdReportero().equals(responsableSeleccionadoId);
-                model.guardarAsignacion(idEvento, rep.getIdReportero(), esResponsable, "FINALIZADA");
+                model.guardarAsignacion(idEvento, rep.getIdReportero(), esResponsable, "ABIERTA");
             }
 
+            model.actualizarFinalizacionEvento(idEvento, responsableSeleccionadoId);
+
             javax.swing.JOptionPane.showMessageDialog(null,
-                    "¡Asignación finalizada correctamente! Ya no se podrán modificar reporteros de este evento.");
+                    "¡Asignación del evento finalizada correctamente! Ya no se podrán modificar reporteros de este evento.");
             view.getFrame().dispose();
         } else {
             javax.swing.JOptionPane.showMessageDialog(null, "Selecciona un evento para confirmar.");

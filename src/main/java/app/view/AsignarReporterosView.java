@@ -46,7 +46,7 @@ public class AsignarReporterosView extends JFrame {
 
 	public AsignarReporterosView() {
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		setBounds(100, 100, 1180, 700);
+		setBounds(100, 100, 1240, 720);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
@@ -54,102 +54,102 @@ public class AsignarReporterosView extends JFrame {
 
 		lblNombreAgencia = new JLabel("Agencia de Prensa : Mi Agencia");
 		lblNombreAgencia.setFont(new Font("Tahoma", Font.BOLD, 18));
-		lblNombreAgencia.setBounds(10, 9, 480, 22);
+		lblNombreAgencia.setBounds(10, 9, 500, 22);
 		contentPane.add(lblNombreAgencia);
 
 		lblResponsable = new JLabel("Reportero responsable: (sin seleccionar)");
 		lblResponsable.setFont(new Font("Tahoma", Font.BOLD, 16));
-		lblResponsable.setBounds(520, 9, 470, 22);
+		lblResponsable.setBounds(640, 20, 530, 22);
 		contentPane.add(lblResponsable);
 
 		btnElegirResponsable = new JButton("Elegir responsable");
-		btnElegirResponsable.setBounds(520, 40, 190, 24);
+		btnElegirResponsable.setBounds(640, 50, 210, 26);
 		contentPane.add(btnElegirResponsable);
 
-		JLabel lblFiltro = new JLabel("Filtro de eventos:");
+		JLabel lblFiltro = new JLabel("Filtro eventos:");
 		lblFiltro.setFont(new Font("Tahoma", Font.PLAIN, 14));
-		lblFiltro.setBounds(10, 45, 140, 20);
+		lblFiltro.setBounds(10, 55, 130, 20);
 		contentPane.add(lblFiltro);
 
 		cbFiltroEventos = new JComboBox<String>();
-		cbFiltroEventos.setModel(new DefaultComboBoxModel(
+		cbFiltroEventos.setModel(new DefaultComboBoxModel<>(
 				new String[] { "Eventos sin reporteros asignados", "Eventos con reporteros asignados" }));
-		cbFiltroEventos.setBounds(160, 45, 300, 22);
+		cbFiltroEventos.setBounds(160, 55, 300, 22);
 		contentPane.add(cbFiltroEventos);
 
-		JLabel lblFiltroTematica = new JLabel("Filtro reporteros:");
+		JLabel lblFiltroTematica = new JLabel("Filtro temática reportero:");
 		lblFiltroTematica.setFont(new Font("Tahoma", Font.PLAIN, 14));
-		lblFiltroTematica.setBounds(10, 75, 140, 20);
+		lblFiltroTematica.setBounds(10, 85, 170, 20);
 		contentPane.add(lblFiltroTematica);
 
 		cbFiltroTematicaReporteros = new JComboBox<String>();
-		cbFiltroTematicaReporteros.setModel(new DefaultComboBoxModel(
+		cbFiltroTematicaReporteros.setModel(new DefaultComboBoxModel<>(
 				new String[] { "Todos los disponibles", "Solo especializados en temática del evento" }));
-		cbFiltroTematicaReporteros.setBounds(160, 75, 300, 22);
+		cbFiltroTematicaReporteros.setBounds(190, 85, 300, 22);
 		contentPane.add(cbFiltroTematicaReporteros);
 
-		JLabel lblFiltroTipoReportero = new JLabel("Tipo:");
+		JLabel lblFiltroTipoReportero = new JLabel("Filtro tipo reportero:");
 		lblFiltroTipoReportero.setFont(new Font("Tahoma", Font.PLAIN, 14));
-		lblFiltroTipoReportero.setBounds(10, 105, 140, 20);
+		lblFiltroTipoReportero.setBounds(10, 115, 150, 20);
 		contentPane.add(lblFiltroTipoReportero);
 
 		cbFiltroTipoReportero = new JComboBox<String>();
 		cbFiltroTipoReportero
 				.setModel(new DefaultComboBoxModel<>(new String[] { "TODOS", "GRÁFICO", "CAMARÓGRAFO", "BASE" }));
-		cbFiltroTipoReportero.setBounds(160, 105, 300, 22);
+		cbFiltroTipoReportero.setBounds(160, 115, 300, 22);
 		contentPane.add(cbFiltroTipoReportero);
 
-		JLabel lblNewLabel_1 = new JLabel("Eventos");
-		lblNewLabel_1.setFont(new Font("Tahoma", Font.PLAIN, 16));
-		lblNewLabel_1.setBounds(10, 150, 81, 14);
-		contentPane.add(lblNewLabel_1);
+		JLabel lblEventos = new JLabel("Eventos");
+		lblEventos.setFont(new Font("Tahoma", Font.PLAIN, 16));
+		lblEventos.setBounds(10, 160, 120, 16);
+		contentPane.add(lblEventos);
 
 		JScrollPane scrollPane = new JScrollPane();
-		scrollPane.setBounds(10, 175, 430, 390);
+		scrollPane.setBounds(10, 185, 500, 430);
 		contentPane.add(scrollPane);
 		tabEventos = new JTable();
 		scrollPane.setViewportView(tabEventos);
 
-		JLabel lblNewLabel_2 = new JLabel("Reporteros Disponibles");
-		lblNewLabel_2.setFont(new Font("Tahoma", Font.PLAIN, 16));
-		lblNewLabel_2.setBounds(470, 150, 208, 14);
-		contentPane.add(lblNewLabel_2);
+		JLabel lblDisponibles = new JLabel("Reporteros Disponibles");
+		lblDisponibles.setFont(new Font("Tahoma", Font.PLAIN, 16));
+		lblDisponibles.setBounds(530, 160, 210, 16);
+		contentPane.add(lblDisponibles);
 
 		JScrollPane scrollPane_1 = new JScrollPane();
-		scrollPane_1.setBounds(470, 175, 330, 390);
+		scrollPane_1.setBounds(530, 185, 330, 430);
 		contentPane.add(scrollPane_1);
 		tabDisponibles = new JTable();
 		scrollPane_1.setViewportView(tabDisponibles);
 
 		btnAsignar = new JButton("Asignar");
-		btnAsignar.setBounds(470, 577, 330, 28);
+		btnAsignar.setBounds(530, 625, 330, 30);
 		contentPane.add(btnAsignar);
 
-		JLabel lblNewLabel_3 = new JLabel("Reporteros Asignados");
-		lblNewLabel_3.setFont(new Font("Tahoma", Font.PLAIN, 16));
-		lblNewLabel_3.setBounds(830, 150, 242, 14);
-		contentPane.add(lblNewLabel_3);
+		JLabel lblAsignados = new JLabel("Reporteros Asignados");
+		lblAsignados.setFont(new Font("Tahoma", Font.PLAIN, 16));
+		lblAsignados.setBounds(880, 160, 220, 16);
+		contentPane.add(lblAsignados);
 
 		JScrollPane scrollPane_2 = new JScrollPane();
-		scrollPane_2.setBounds(830, 175, 330, 390);
+		scrollPane_2.setBounds(880, 185, 330, 430);
 		contentPane.add(scrollPane_2);
 		tabAsignados = new JTable();
 		scrollPane_2.setViewportView(tabAsignados);
 
-		btnEliminar = new JButton("Eliminar Asignación");
-		btnEliminar.setBounds(830, 577, 330, 28);
+		btnEliminar = new JButton("Eliminar");
+		btnEliminar.setBounds(880, 625, 330, 30);
 		contentPane.add(btnEliminar);
 
 		btnFinalizarAsignacion = new JButton("Finalizar asignación de evento");
-		btnFinalizarAsignacion.setBounds(10, 577, 430, 28);
+		btnFinalizarAsignacion.setBounds(10, 625, 500, 30);
 		contentPane.add(btnFinalizarAsignacion);
 
 		btnCancelar = new JButton("Cancelar");
-		btnCancelar.setBounds(1040, 626, 120, 28);
+		btnCancelar.setBounds(1090, 662, 120, 28);
 		contentPane.add(btnCancelar);
 
 		btnAceptar = new JButton("Aceptar");
-		btnAceptar.setBounds(910, 626, 120, 28);
+		btnAceptar.setBounds(960, 662, 120, 28);
 		contentPane.add(btnAceptar);
 	}
 
