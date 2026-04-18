@@ -86,6 +86,7 @@ public class DarAccesoEmpresaView extends JFrame {
 		cbFiltroPago = new JComboBox<>(new String[] {
 				"Todos",
 				"Tarifa vigente y pagada",
+				"Sin tarifa (pagado o no)",
 				"Sin tarifa y reportaje pagado",
 				"No cumple pago"
 		});

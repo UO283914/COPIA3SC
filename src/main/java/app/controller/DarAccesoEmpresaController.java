@@ -175,10 +175,13 @@ public class DarAccesoEmpresaController {
 			case 1: // Tarifa vigente
 				include = tieneTarifa && alCorriente;
 				break;
-			case 2: // Sin tarifa + reportaje pagado
+			case 2: // Sin tarifa (independientemente del pago)
+				include = !tieneTarifa;
+				break;
+			case 3: // Sin tarifa + reportaje pagado
 				include = !tieneTarifa && reportajePagado;
 				break;
-			case 3: // No cumple pago
+			case 4: // No cumple pago
 				include = !elegible;
 				break;
 			default: // Todos
