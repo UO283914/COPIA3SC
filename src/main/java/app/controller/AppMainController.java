@@ -3,6 +3,7 @@ package app.controller;
 
 
 import javax.swing.JOptionPane;
+import java.util.List;
 
 
 import app.model.AccederReportajeModel;
@@ -72,9 +73,30 @@ public class AppMainController {
 	}
 
 	public void initView() {
+		asegurarDatosDemoAccesos();
 		actualizarComboBoxes();
 		view.getFrame().setVisible(true);
 		// Agregar artículos a la lista.
+	}
+
+	/**
+	 * Garantiza que estén cargados los datos demo usados por DarAccesoEmpresa
+	 * (empresas 7,8,9,10 y sus ofrecimientos asociados en el dataReportajes).
+	 * Si no están, recarga dataset completo para evitar pantallas vacías/incompletas.
+	 */
+	private void asegurarDatosDemoAccesos() {
+		Database db = new Database();
+		try {
+			List<Object[]> rows = db.executeQueryArray(
+					"SELECT COUNT(*) FROM Empresa_Comunicacion WHERE id_empresa IN (7,8,9,10)");
+			int count = (rows == null || rows.isEmpty()) ? 0 : ((Number) rows.get(0)[0]).intValue();
+			if (count < 4) {
+				db.loadDatabase();
+			}
+		} catch (RuntimeException ex) {
+			// Si la BD no existe o está incompleta, se recargan datos demo.
+			db.loadDatabase();
+		}
 	}
 
 	// LÓGICA DE NEGOCIO (Los métodos que hacen el trabajo de verdad)
