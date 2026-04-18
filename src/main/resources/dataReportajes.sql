@@ -397,3 +397,50 @@ VALUES (200, 200, 1, 'Secreto revelado', 'Ya es público', 'Texto del reportaje 
 -- 5. Se lo ofrecemos al Diario El Mañana (ID 1) como PENDIENTE
 INSERT INTO Ofrecimiento (id_evento, id_empresa, estado, tiene_acceso, acceso_especial_embargo) 
 VALUES (200, 1, 'PENDIENTE', false, false);
+
+-- ==============================================================================
+-- ===== REFUERZO DE DATOS DEMO PARA DAR ACCESO (evita datos incompletos) =======
+-- ==============================================================================
+-- Este bloque garantiza que siempre existan las empresas 7-10 y los ofrecimientos
+-- del evento 20 usados en la pantalla DarAccesoEmpresa, incluso si en algún entorno
+-- se ha cargado una versión parcial del dataset.
+
+INSERT OR IGNORE INTO Empresa_Comunicacion (id_empresa, nombre, email, acepta_embargos)
+VALUES (7, 'Noticias Norte', 'redaccion@noticiasnorte.es', true);
+INSERT OR IGNORE INTO Empresa_Comunicacion (id_empresa, nombre, email, acepta_embargos)
+VALUES (8, 'Canal Sur 8', 'info@canalsur8.tv', true);
+INSERT OR IGNORE INTO Empresa_Comunicacion (id_empresa, nombre, email, acepta_embargos)
+VALUES (9, 'Revista Horizonte', 'contacto@horizonte.com', true);
+INSERT OR IGNORE INTO Empresa_Comunicacion (id_empresa, nombre, email, acepta_embargos)
+VALUES (10, 'Diario Delta', 'editorial@diariodelta.es', true);
+
+INSERT OR IGNORE INTO Empresa_Tematica (id_empresa, id_tematica) VALUES (7, 1);
+INSERT OR IGNORE INTO Empresa_Tematica (id_empresa, id_tematica) VALUES (8, 2);
+INSERT OR IGNORE INTO Empresa_Tematica (id_empresa, id_tematica) VALUES (9, 4);
+INSERT OR IGNORE INTO Empresa_Tematica (id_empresa, id_tematica) VALUES (10, 5);
+
+INSERT OR IGNORE INTO Agencia_Empresa_Tarifa (id_agencia, id_empresa, tarifa_plana, fecha_inicio, fecha_fin, al_corriente_pago)
+VALUES (1, 7, 1400.00, '2026-01-01', '2026-12-31', true);
+INSERT OR IGNORE INTO Agencia_Empresa_Tarifa (id_agencia, id_empresa, tarifa_plana, fecha_inicio, fecha_fin, al_corriente_pago)
+VALUES (1, 8, 1600.00, '2026-01-01', '2026-12-31', false);
+
+-- Garantiza que en Agencia 1 exista al menos un caso "sin tarifa"
+-- (empresa 9: sin tarifa + reportaje pagado; empresa 10: sin tarifa + sin pagar).
+DELETE FROM Agencia_Empresa_Tarifa WHERE id_agencia = 1 AND id_empresa IN (9, 10);
+
+INSERT OR IGNORE INTO Ofrecimiento (id_evento, id_empresa, estado, tiene_acceso, acceso_especial_embargo, reportaje_pagado, fecha_pago_reportaje, descargado)
+VALUES (20, 7, 'ACEPTADO', false, false, false, NULL, false);
+INSERT OR IGNORE INTO Ofrecimiento (id_evento, id_empresa, estado, tiene_acceso, acceso_especial_embargo, reportaje_pagado, fecha_pago_reportaje, descargado)
+VALUES (20, 8, 'ACEPTADO', false, false, false, NULL, false);
+INSERT OR IGNORE INTO Ofrecimiento (id_evento, id_empresa, estado, tiene_acceso, acceso_especial_embargo, reportaje_pagado, fecha_pago_reportaje, descargado)
+VALUES (20, 9, 'ACEPTADO', false, false, true, '2026-10-28 09:30:00', false);
+INSERT OR IGNORE INTO Ofrecimiento (id_evento, id_empresa, estado, tiene_acceso, acceso_especial_embargo, reportaje_pagado, fecha_pago_reportaje, descargado)
+VALUES (20, 10, 'ACEPTADO', false, false, false, NULL, false);
+
+UPDATE Evento SET finalizado = true WHERE id_evento = 20;
+UPDATE Ofrecimiento
+SET estado = 'ACEPTADO', tiene_acceso = false, acceso_especial_embargo = false, reportaje_pagado = false, fecha_pago_reportaje = NULL, descargado = false
+WHERE id_evento = 20 AND id_empresa IN (7, 8, 10);
+UPDATE Ofrecimiento
+SET estado = 'ACEPTADO', tiene_acceso = false, acceso_especial_embargo = false, reportaje_pagado = true, fecha_pago_reportaje = '2026-10-28 09:30:00', descargado = false
+WHERE id_evento = 20 AND id_empresa = 9;
