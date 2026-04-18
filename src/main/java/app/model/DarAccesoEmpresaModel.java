@@ -37,9 +37,9 @@ public class DarAccesoEmpresaModel {
 				+ "LEFT JOIN Agencia_Empresa_Tarifa aet "
 				+ "ON aet.id_agencia = ev.id_agencia AND aet.id_empresa = emp.id_empresa "
 				+ "WHERE o.id_evento = ? "
-				+ "AND o.estado = 'ACEPTADO' "
-				+ "AND o.tiene_acceso = ? "
-				+ "AND COALESCE(ev.finalizado, 0) = 1";
+				+ "AND UPPER(TRIM(o.estado)) = 'ACEPTADO' "
+				+ "AND CAST(COALESCE(o.tiene_acceso, 0) AS INTEGER) = ? "
+				+ "AND CAST(COALESCE(ev.finalizado, 0) AS INTEGER) = 1";
 		return db.executeQueryPojo(EmpresaDisplayDTO.class, sql, idEvento, conAcceso ? 1 : 0);
 	}
 
@@ -81,9 +81,9 @@ public class DarAccesoEmpresaModel {
 				+ "ON aet.id_agencia = ev.id_agencia AND aet.id_empresa = o.id_empresa "
 				+ "WHERE o.id_evento = ? "
 				+ "AND o.id_empresa = ? "
-				+ "AND o.estado = 'ACEPTADO' "
+				+ "AND UPPER(TRIM(o.estado)) = 'ACEPTADO' "
 				+ "AND ( (aet.id_empresa IS NOT NULL AND aet.al_corriente_pago = 1) "
-				+ "   OR (aet.id_empresa IS NULL AND o.reportaje_pagado = 1) )";
+				+ "   OR (aet.id_empresa IS NULL AND CAST(COALESCE(o.reportaje_pagado, 0) AS INTEGER) = 1) )";
 		List<Object[]> rows = db.executeQueryArray(sql, idEvento, idEmpresa);
 		return rows != null && !rows.isEmpty() && ((Number) rows.get(0)[0]).intValue() > 0;
 	}
